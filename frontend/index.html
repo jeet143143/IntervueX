@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AI-powered Interview Preparation Coach with 3D interactive interface. Practice mock interviews for Google, Amazon, Meta and more.">
+  <title>IntervueX — Master Your Next Interview</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Chart.js for dashboard -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+  <!-- Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <!-- Three.js Canvas (background) -->
+  <canvas id="three-canvas"></canvas>
+
+  <!-- Main App Container -->
+  <div id="app">
+
+    <!-- ===================== AUTH SECTION ===================== -->
+    <section id="auth-section" class="section active">
+      <div class="auth-container">
+        <div class="auth-card glass-card">
+          <!-- Logo -->
+          <div class="auth-logo">
+            <div class="auth-logo-icon">🎯</div>
+            <h1 class="auth-logo-text">Intervue<span class="gradient-text">X</span></h1>
+            <p class="auth-logo-sub">Your AI-powered interview preparation platform</p>
+          </div>
+
+          <!-- Tabs -->
+          <div class="auth-tabs">
+            <button class="auth-tab active" data-tab="login">Sign In</button>
+            <button class="auth-tab" data-tab="signup">Create Account</button>
+          </div>
+
+          <!-- Login Form -->
+          <div id="login-form-container">
+            <form id="login-form" class="auth-form">
+              <div class="form-group">
+                <label for="login-email">Email Address</label>
+                <input type="email" id="login-email" placeholder="you@example.com" required>
+              </div>
+              <div class="form-group">
+                <label for="login-password">Password</label>
+                <div class="password-field">
+                  <input type="password" id="login-password" placeholder="••••••••" required>
+                  <button type="button" class="toggle-password">👁️</button>
+                </div>
+              </div>
+              <p class="auth-error" id="login-error"></p>
+              <button type="submit" id="btn-login" class="btn btn-primary btn-full btn-glow">Sign In</button>
+            </form>
+          </div>
+
+          <!-- Signup Form -->
+          <div id="signup-form-container" style="display:none">
+            <form id="signup-form" class="auth-form">
+              <div class="form-group">
+                <label for="signup-name">Full Name</label>
+                <input type="text" id="signup-name" placeholder="John Doe" required minlength="2">
+              </div>
+              <div class="form-group">
+                <label for="signup-email">Email Address</label>
+                <input type="email" id="signup-email" placeholder="you@example.com" required>
+              </div>
+              <div class="form-group">
+                <label for="signup-password">Password</label>
+                <div class="password-field">
+                  <input type="password" id="signup-password" placeholder="Min 6 characters" required minlength="6">
+                  <button type="button" class="toggle-password">👁️</button>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="signup-confirm">Confirm Password</label>
+                <div class="password-field">
+                  <input type="password" id="signup-confirm" placeholder="••••••••" required>
+                  <button type="button" class="toggle-password">👁️</button>
+                </div>
+              </div>
+              <p class="auth-error" id="signup-error"></p>
+              <button type="submit" id="btn-signup" class="btn btn-primary btn-full btn-glow">Create Account</button>
+            </form>
+          </div>
+
+          <!-- Footer -->
+          <div class="auth-footer">
+            <p>By continuing, you agree to our Terms of Service</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== NAV BAR ===================== -->
+    <nav id="app-nav" class="app-nav hidden">
+      <div class="nav-left">
+        <span class="nav-logo">🎯</span>
+        <span class="nav-brand">IntervueX</span>
+      </div>
+      <div class="nav-center">
+        <button class="nav-link" data-nav="landing">Home</button>
+        <button class="nav-link" data-nav="setup">Interview</button>
+        <button class="nav-link" data-nav="resume">Resume</button>
+        <button class="nav-link" data-nav="dashboard">Dashboard</button>
+        <button class="nav-link" data-nav="help">Help</button>
+      </div>
+      <div class="nav-right">
+        <span class="nav-user">
+          <span class="nav-avatar" id="nav-user-avatar">U</span>
+          <span id="nav-user-name">User</span>
+        </span>
+        <button id="btn-logout" class="btn btn-outline btn-small">Logout</button>
+      </div>
+      <!-- Mobile Hamburger -->
+      <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle navigation menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </nav>
+
+    <!-- Mobile Navigation Dropdown -->
+    <div class="nav-mobile-dropdown" id="nav-mobile-dropdown">
+      <button class="mobile-nav-link" data-nav="landing">🏠 Home</button>
+      <button class="mobile-nav-link" data-nav="setup">🎤 Interview</button>
+      <button class="mobile-nav-link" data-nav="resume">📄 Resume</button>
+      <button class="mobile-nav-link" data-nav="dashboard">📊 Dashboard</button>
+      <button class="mobile-nav-link" data-nav="help">❓ Help</button>
+      <div class="mobile-nav-divider"></div>
+      <div class="mobile-nav-user">
+        <div class="mobile-user-info">
+          <span class="nav-avatar" id="mobile-user-avatar">U</span>
+          <span class="mobile-user-name" id="mobile-user-name">User</span>
+        </div>
+        <button id="btn-logout-mobile" class="btn btn-outline btn-small">Logout</button>
+      </div>
+    </div>
+
+    <!-- ===================== LANDING SECTION ===================== -->
+    <section id="landing-section" class="section hidden">
+      <div class="landing-content">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          AI-Powered Interview Platform
+        </div>
+        <h1 class="hero-title">
+          Master Your<br>
+          <span class="gradient-text">Next Interview</span>
+        </h1>
+        <p class="hero-subtitle">
+          Practice with AI interviewers from top companies. Get real-time feedback,
+          score tracking, and personalized improvement tips.
+        </p>
+        <div class="hero-actions">
+          <button id="btn-start-interview" class="btn btn-primary btn-glow">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="5,3 19,12 5,21"/>
+            </svg>
+            Start Mock Interview
+          </button>
+          <button id="btn-resume-analyzer" class="btn btn-secondary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14,2 14,8 20,8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+            Analyze Resume
+          </button>
+          <button id="btn-dashboard" class="btn btn-outline">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="20" x2="18" y2="10"/>
+              <line x1="12" y1="20" x2="12" y2="4"/>
+              <line x1="6" y1="20" x2="6" y2="14"/>
+            </svg>
+            Dashboard
+          </button>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <span class="stat-number" data-target="5">5</span>
+            <span class="stat-label">Companies</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number" data-target="3">3</span>
+            <span class="stat-label">Difficulty Levels</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number" data-target="10">∞</span>
+            <span class="stat-label">AI Questions</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SETUP SECTION ===================== -->
+    <section id="setup-section" class="section hidden">
+      <div class="section-content">
+        <button class="btn-back" id="btn-back-setup">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/>
+          </svg>
+          Back
+        </button>
+        <h2 class="section-title">Configure Your <span class="gradient-text">Interview</span></h2>
+        <p class="section-subtitle">Select your preferences to tailor the experience</p>
+
+        <div class="setup-grid">
+          <!-- Role Selection -->
+          <div class="setup-card glass-card">
+            <div class="setup-card-icon">👨‍💻</div>
+            <h3>Select Role</h3>
+            <div class="option-grid" id="role-options">
+              <button class="option-btn" data-value="Software Engineer">Software Engineer</button>
+              <button class="option-btn" data-value="Data Analyst">Data Analyst</button>
+              <button class="option-btn" data-value="Frontend Developer">Frontend Developer</button>
+              <button class="option-btn" data-value="Backend Developer">Backend Developer</button>
+              <button class="option-btn" data-value="Full Stack Developer">Full Stack Developer</button>
+              <button class="option-btn" data-value="DevOps Engineer">DevOps Engineer</button>
+              <button class="option-btn" data-value="Product Manager">Product Manager</button>
+              <button class="option-btn" data-value="Data Scientist">Data Scientist</button>
+              <button class="option-btn other-btn" data-value="other">✏️ Other</button>
+            </div>
+            <div class="custom-input-wrapper hidden" id="custom-role-wrapper">
+              <input type="text" id="custom-role-input" class="form-input custom-option-input" placeholder="Type your role, e.g. ML Engineer, QA Tester...">
+            </div>
+          </div>
+
+          <!-- Company Selection -->
+          <div class="setup-card glass-card">
+            <div class="setup-card-icon">🏢</div>
+            <h3>Select Company</h3>
+            <div class="option-grid" id="company-options">
+              <button class="option-btn company-btn" data-value="Google">
+                <span class="company-logo">G</span> Google
+              </button>
+              <button class="option-btn company-btn" data-value="Amazon">
+                <span class="company-logo">A</span> Amazon
+              </button>
+              <button class="option-btn company-btn" data-value="Meta">
+                <span class="company-logo">M</span> Meta
+              </button>
+              <button class="option-btn company-btn" data-value="Microsoft">
+                <span class="company-logo">MS</span> Microsoft
+              </button>
+              <button class="option-btn company-btn" data-value="Apple">
+                <span class="company-logo">🍎</span> Apple
+              </button>
+              <button class="option-btn company-btn" data-value="Generic">
+                <span class="company-logo">⭐</span> Generic
+              </button>
+              <button class="option-btn company-btn other-btn" data-value="other">
+                <span class="company-logo">✏️</span> Other
+              </button>
+            </div>
+            <div class="custom-input-wrapper hidden" id="custom-company-wrapper">
+              <input type="text" id="custom-company-input" class="form-input custom-option-input" placeholder="Type company name, e.g. Netflix, Uber, Flipkart...">
+            </div>
+          </div>
+
+          <!-- Difficulty Selection -->
+          <div class="setup-card glass-card">
+            <div class="setup-card-icon">🎯</div>
+            <h3>Difficulty Level</h3>
+            <div class="option-grid difficulty-grid" id="difficulty-options">
+              <button class="option-btn difficulty-btn easy" data-value="Easy">
+                <span class="diff-icon">🟢</span>
+                Easy
+                <span class="diff-desc">Warm-up questions</span>
+              </button>
+              <button class="option-btn difficulty-btn medium" data-value="Medium">
+                <span class="diff-icon">🟡</span>
+                Medium
+                <span class="diff-desc">Standard interview</span>
+              </button>
+              <button class="option-btn difficulty-btn hard" data-value="Hard">
+                <span class="diff-icon">🔴</span>
+                Hard
+                <span class="diff-desc">Expert level</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== CANDIDATE DETAILS ========== -->
+        <div class="candidate-details-section">
+          <h2 class="section-title" style="margin-top: 2rem;">Your <span class="gradient-text">Profile</span></h2>
+          <p class="section-subtitle">Upload your resume and fill in your details for personalized questions</p>
+
+          <div class="setup-grid">
+            <!-- Resume Upload -->
+            <div class="setup-card glass-card candidate-card">
+              <div class="setup-card-icon">📄</div>
+              <h3>Upload Resume <span class="required-badge">Required</span></h3>
+              <div class="setup-upload-zone" id="setup-resume-zone">
+                <div class="setup-upload-content" id="setup-upload-content">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14,2 14,8 20,8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                    <polyline points="10,9 9,9 8,9"/>
+                  </svg>
+                  <p class="setup-upload-text">Drag & drop your resume (PDF)</p>
+                  <p class="setup-upload-hint">or click to browse · Max 5MB</p>
+                </div>
+                <div class="setup-upload-success hidden" id="setup-upload-success">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent-success)" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22,4 12,14.01 9,11.01"/>
+                  </svg>
+                  <p class="setup-upload-filename" id="setup-resume-filename">resume.pdf</p>
+                  <button class="setup-upload-remove" id="setup-resume-remove" title="Remove">✕</button>
+                </div>
+                <input type="file" id="setup-resume-input" accept=".pdf" hidden>
+              </div>
+            </div>
+
+            <!-- Education Details -->
+            <div class="setup-card glass-card candidate-card">
+              <div class="setup-card-icon">🎓</div>
+              <h3>Education Details</h3>
+              <div class="candidate-form-grid">
+                <div class="form-group">
+                  <label for="candidate-university">University / College <span class="required-badge">Required</span></label>
+                  <input type="text" id="candidate-university" class="form-input" placeholder="e.g. IIT Delhi, Stanford University">
+                </div>
+                <div class="form-group">
+                  <label for="candidate-passout-year">Passout Year <span class="required-badge">Required</span></label>
+                  <input type="number" id="candidate-passout-year" class="form-input" placeholder="e.g. 2024" min="1990" max="2035">
+                </div>
+                <div class="form-group">
+                  <label for="candidate-dob">Date of Birth <span class="optional-badge">Optional</span></label>
+                  <input type="date" id="candidate-dob" class="form-input">
+                </div>
+              </div>
+            </div>
+
+            <!-- Experience Details -->
+            <div class="setup-card glass-card candidate-card">
+              <div class="setup-card-icon">💼</div>
+              <h3>Experience</h3>
+              <div class="candidate-form-grid">
+                <div class="form-group">
+                  <label for="candidate-experience">Years of Experience <span class="optional-badge">Optional</span></label>
+                  <input type="number" id="candidate-experience" class="form-input" placeholder="e.g. 2 (0 for fresher)" min="0" max="50" step="0.5">
+                </div>
+                <div class="form-group">
+                  <label for="candidate-company">Current Company <span class="optional-badge">Optional</span></label>
+                  <input type="text" id="candidate-company" class="form-input" placeholder="e.g. TCS, Infosys, Google">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="setup-actions">
+          <button id="btn-begin-interview" class="btn btn-primary btn-glow btn-large" disabled>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="5,3 19,12 5,21"/>
+            </svg>
+            Begin Interview
+          </button>
+          <p class="setup-hint" id="setup-hint">Please select a role, company, difficulty and fill your profile to continue</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== INTERVIEW SECTION (Video Call UI) ===================== -->
+    <section id="interview-section" class="section hidden">
+      <div class="video-call-container">
+        <!-- Call Header -->
+        <div class="call-header">
+          <div class="call-header-left">
+            <span class="call-rec-dot"></span>
+            <span class="call-title">Interview Session</span>
+            <span class="meta-badge" id="interview-company">Google</span>
+            <span class="meta-badge" id="interview-role">Software Engineer</span>
+            <span class="meta-badge" id="interview-difficulty">Medium</span>
+          </div>
+          <div class="call-header-right">
+            <span id="question-counter" class="call-question-badge">Q1</span>
+            <div class="timer" id="timer">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/>
+              </svg>
+              <span id="timer-display">00:00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Video Grid -->
+        <div class="call-grid" id="call-grid">
+          <!-- AI Interviewer Panel -->
+          <div class="call-panel interviewer-panel">
+            <canvas id="avatar-canvas"></canvas>
+            <div class="call-panel-overlay">
+              <div class="interviewer-status" id="interviewer-status">
+                <span class="status-dot speaking"></span>
+                <span>AI Interviewer is speaking...</span>
+              </div>
+            </div>
+            <!-- Floating question transcript -->
+            <div class="call-transcript" id="question-transcript">
+              <p id="question-text">Preparing your interview...</p>
+            </div>
+          </div>
+
+          <!-- Candidate Panel -->
+          <div class="call-panel candidate-panel">
+            <video id="candidate-video" autoplay muted playsinline></video>
+            <div class="candidate-no-video" id="candidate-no-video">
+              <div class="candidate-avatar-circle">
+                <span id="candidate-initial">Y</span>
+              </div>
+              <p>Camera off</p>
+            </div>
+            <div class="call-panel-label">
+              <span id="candidate-name-label">You</span>
+            </div>
+            <!-- Live speech transcript -->
+            <div class="speech-transcript" id="speech-transcript">
+              <p class="transcript-final" id="transcript-final"></p>
+              <p class="transcript-interim" id="transcript-interim"></p>
+            </div>
+            <!-- Mic level indicator -->
+            <div class="mic-indicator" id="mic-indicator">
+              <div class="mic-bar"></div>
+              <div class="mic-bar"></div>
+              <div class="mic-bar"></div>
+              <div class="mic-bar"></div>
+              <div class="mic-bar"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Code Notepad Panel -->
+        <div class="notepad-panel hidden" id="notepad-panel">
+          <div class="notepad-header">
+            <div class="notepad-header-left">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="16,18 22,12 16,6"/>
+                <polyline points="8,6 2,12 8,18"/>
+              </svg>
+              <span class="notepad-title">Code Editor</span>
+            </div>
+            <div class="notepad-header-right">
+              <select id="notepad-lang" class="notepad-lang-select">
+                <option value="javascript">JavaScript</option>
+                <option value="python">Python</option>
+                <option value="java">Java</option>
+                <option value="cpp">C++</option>
+                <option value="plain">Plain Text</option>
+              </select>
+              <button class="notepad-btn" id="notepad-clear" title="Clear">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3,6 5,6 21,6"/>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                </svg>
+              </button>
+              <button class="notepad-btn" id="notepad-close" title="Close">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="notepad-body">
+            <div class="notepad-line-numbers" id="notepad-line-numbers">
+              <span>1</span>
+            </div>
+            <textarea
+              id="notepad-editor"
+              class="notepad-editor"
+              placeholder="Write your code here..."
+              spellcheck="false"
+              autocomplete="off"
+              autocapitalize="off"
+            ></textarea>
+          </div>
+          <div class="notepad-footer">
+            <span class="notepad-footer-info" id="notepad-info">Ln 1, Col 1</span>
+            <span class="notepad-footer-hint">Your code will be included with your answer</span>
+          </div>
+        </div>
+
+        <!-- Call Controls -->
+        <div class="call-controls">
+          <button class="call-btn" id="btn-toggle-mic" title="Toggle Microphone">
+            <svg id="mic-icon-on" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="23"/>
+              <line x1="8" y1="23" x2="16" y2="23"/>
+            </svg>
+            <svg id="mic-icon-off" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+              <line x1="1" y1="1" x2="23" y2="23"/>
+              <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/>
+              <path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2c0 .5-.05 1-.15 1.46"/>
+              <line x1="12" y1="19" x2="12" y2="23"/>
+              <line x1="8" y1="23" x2="16" y2="23"/>
+            </svg>
+          </button>
+          <button class="call-btn" id="btn-toggle-camera" title="Toggle Camera">
+            <svg id="cam-icon-on" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="23,7 16,12 23,17"/>
+              <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+            </svg>
+            <svg id="cam-icon-off" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+              <path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2m5.66 0H14a2 2 0 0 1 2 2v3.34l1 1L23 7v10"/>
+              <line x1="1" y1="1" x2="23" y2="23"/>
+            </svg>
+          </button>
+          <button class="call-btn btn-submit-call" id="btn-submit-answer" title="Submit Answer">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9,11 12,14 22,4"/>
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+            </svg>
+            Submit Answer
+          </button>
+          <button class="call-btn btn-notepad-call" id="btn-toggle-notepad" title="Code Editor">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="16,18 22,12 16,6"/>
+              <polyline points="8,6 2,12 8,18"/>
+            </svg>
+          </button>
+          <button class="call-btn btn-hint-call" id="btn-hint" title="Show Hint">
+            💡
+          </button>
+          <button class="call-btn btn-end-call" id="btn-end-interview" title="End Interview">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"/>
+              <line x1="23" y1="1" x2="1" y2="23"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Hint Overlay -->
+        <div class="call-hint-overlay hidden" id="question-hint">
+          <div class="call-hint-content glass-card">
+            <span class="hint-icon">💡</span>
+            <span id="hint-text"></span>
+            <button class="hint-close" id="hint-close-btn">✕</button>
+          </div>
+        </div>
+
+        <!-- Evaluation Overlay (shown after submit) -->
+        <div class="call-eval-overlay hidden" id="evaluation-card">
+          <div class="call-eval-content">
+            <h3 class="eval-title">📊 Evaluation Results</h3>
+            <div class="score-grid">
+              <div class="score-item">
+                <div class="score-ring" id="ring-clarity">
+                  <svg viewBox="0 0 120 120">
+                    <circle cx="60" cy="60" r="52" class="ring-bg"/>
+                    <circle cx="60" cy="60" r="52" class="ring-fill" id="ring-clarity-fill"/>
+                  </svg>
+                  <div class="score-value" id="score-clarity">0</div>
+                </div>
+                <span class="score-label">Clarity</span>
+              </div>
+              <div class="score-item">
+                <div class="score-ring" id="ring-accuracy">
+                  <svg viewBox="0 0 120 120">
+                    <circle cx="60" cy="60" r="52" class="ring-bg"/>
+                    <circle cx="60" cy="60" r="52" class="ring-fill" id="ring-accuracy-fill"/>
+                  </svg>
+                  <div class="score-value" id="score-accuracy">0</div>
+                </div>
+                <span class="score-label">Accuracy</span>
+              </div>
+              <div class="score-item">
+                <div class="score-ring" id="ring-communication">
+                  <svg viewBox="0 0 120 120">
+                    <circle cx="60" cy="60" r="52" class="ring-bg"/>
+                    <circle cx="60" cy="60" r="52" class="ring-fill" id="ring-communication-fill"/>
+                  </svg>
+                  <div class="score-value" id="score-communication">0</div>
+                </div>
+                <span class="score-label">Communication</span>
+              </div>
+            </div>
+
+            <div class="eval-details">
+              <div class="eval-section strengths">
+                <h4>✅ Strengths</h4>
+                <ul id="eval-strengths"></ul>
+              </div>
+              <div class="eval-section weaknesses">
+                <h4>⚠️ Areas to Improve</h4>
+                <ul id="eval-weaknesses"></ul>
+              </div>
+              <div class="eval-section improved">
+                <h4>💡 Model Answer</h4>
+                <p id="eval-improved"></p>
+              </div>
+            </div>
+
+            <div class="eval-actions">
+              <button id="btn-next-question" class="btn btn-primary">
+                Next Question →
+              </button>
+              <button id="btn-end-interview-eval" class="btn btn-outline">
+                End Interview
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hidden textarea for answer accumulation -->
+        <textarea id="answer-input" style="display:none"></textarea>
+      </div>
+    </section>
+
+    <!-- ===================== RESULTS SECTION ===================== -->
+    <section id="results-section" class="section hidden">
+      <div class="section-content">
+        <div class="results-header">
+          <h2 class="section-title">Interview <span class="gradient-text">Complete</span></h2>
+          <div class="overall-score-card glass-card">
+            <div class="overall-score-ring">
+              <svg viewBox="0 0 160 160">
+                <circle cx="80" cy="80" r="70" class="ring-bg"/>
+                <circle cx="80" cy="80" r="70" class="ring-fill" id="overall-ring-fill"/>
+              </svg>
+              <div class="overall-score-value" id="overall-score-value">0</div>
+            </div>
+            <div class="overall-score-details">
+              <h3>Overall Score</h3>
+              <p id="overall-score-label">Calculating...</p>
+              <div class="overall-meta">
+                <span id="result-company" class="meta-badge"></span>
+                <span id="result-role" class="meta-badge"></span>
+                <span id="result-questions-count" class="meta-badge"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="results-questions" id="results-questions">
+          <!-- Dynamically populated -->
+        </div>
+
+        <div class="results-actions">
+          <button id="btn-new-interview" class="btn btn-primary btn-glow">Start New Interview</button>
+          <button id="btn-to-dashboard" class="btn btn-outline">View Dashboard</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== RESUME SECTION ===================== -->
+    <section id="resume-section" class="section hidden">
+      <div class="section-content">
+        <button class="btn-back" id="btn-back-resume">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/>
+          </svg>
+          Back
+        </button>
+        <h2 class="section-title">Resume <span class="gradient-text">Analyzer</span></h2>
+        <p class="section-subtitle">Upload your resume for AI-powered ATS analysis and improvement tips</p>
+
+        <div class="resume-layout">
+          <!-- Upload Area -->
+          <div class="upload-card glass-card" id="upload-card">
+            <div class="upload-zone" id="upload-zone">
+              <div class="upload-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17,8 12,3 7,8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+              </div>
+              <p class="upload-text">Drag & drop your PDF resume here</p>
+              <p class="upload-hint">or click to browse files (Max 5MB)</p>
+              <input type="file" id="resume-file-input" accept=".pdf" hidden>
+            </div>
+            <div class="upload-selected hidden" id="upload-selected">
+              <span class="file-icon">📄</span>
+              <span class="file-name" id="selected-file-name"></span>
+              <button class="btn-remove-file" id="btn-remove-file">✕</button>
+            </div>
+            <div class="form-group" style="margin-top: 1rem;">
+              <label for="resume-target-role">Target Role</label>
+              <select id="resume-target-role">
+                <option value="Software Engineer">Software Engineer</option>
+                <option value="Data Analyst">Data Analyst</option>
+                <option value="Frontend Developer">Frontend Developer</option>
+                <option value="Backend Developer">Backend Developer</option>
+                <option value="Full Stack Developer">Full Stack Developer</option>
+                <option value="DevOps Engineer">DevOps Engineer</option>
+                <option value="Product Manager">Product Manager</option>
+                <option value="Data Scientist">Data Scientist</option>
+              </select>
+            </div>
+            <button id="btn-analyze-resume" class="btn btn-primary btn-full" disabled>
+              🔍 Analyze Resume
+            </button>
+          </div>
+
+          <!-- Analysis Results -->
+          <div class="resume-results glass-card hidden" id="resume-results">
+            <h3 class="results-title">📋 Analysis Results</h3>
+
+            <div class="ats-score-section">
+              <div class="ats-score-ring">
+                <svg viewBox="0 0 140 140">
+                  <circle cx="70" cy="70" r="60" class="ring-bg"/>
+                  <circle cx="70" cy="70" r="60" class="ring-fill" id="ats-ring-fill"/>
+                </svg>
+                <div class="ats-score-value" id="ats-score-value">0</div>
+              </div>
+              <div class="ats-score-info">
+                <h4>ATS Compatibility Score</h4>
+                <p id="ats-score-label">Analyzing...</p>
+              </div>
+            </div>
+
+            <div class="resume-detail-section">
+              <div class="resume-detail strengths">
+                <h4>✅ Strengths</h4>
+                <ul id="resume-strengths"></ul>
+              </div>
+              <div class="resume-detail keywords">
+                <h4>🔑 Missing Keywords</h4>
+                <div class="keyword-chips" id="resume-keywords"></div>
+              </div>
+              <div class="resume-detail suggestions">
+                <h4>💡 Suggestions</h4>
+                <ul id="resume-suggestions"></ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== DASHBOARD SECTION ===================== -->
+    <section id="dashboard-section" class="section hidden">
+      <div class="section-content">
+        <button class="btn-back" id="btn-back-dashboard">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/>
+          </svg>
+          Back
+        </button>
+        <h2 class="section-title">Performance <span class="gradient-text">Dashboard</span></h2>
+
+        <!-- Stats Cards -->
+        <div class="dashboard-stats">
+          <div class="stat-card glass-card">
+            <div class="stat-card-icon">🎯</div>
+            <div class="stat-card-value" id="dash-total-interviews">0</div>
+            <div class="stat-card-label">Total Interviews</div>
+          </div>
+          <div class="stat-card glass-card">
+            <div class="stat-card-icon">❓</div>
+            <div class="stat-card-value" id="dash-total-questions">0</div>
+            <div class="stat-card-label">Questions Answered</div>
+          </div>
+          <div class="stat-card glass-card">
+            <div class="stat-card-icon">⭐</div>
+            <div class="stat-card-value" id="dash-avg-score">0</div>
+            <div class="stat-card-label">Average Score</div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="dashboard-charts">
+          <div class="chart-card glass-card">
+            <h3>Score Trends</h3>
+            <canvas id="trends-chart"></canvas>
+          </div>
+          <div class="chart-card glass-card">
+            <h3>Category Breakdown</h3>
+            <canvas id="category-chart"></canvas>
+          </div>
+        </div>
+
+        <!-- Weak Areas -->
+        <div class="weak-areas glass-card" id="weak-areas-card">
+          <h3>⚠️ Areas to Improve</h3>
+          <div class="weak-areas-list" id="weak-areas-list">
+            <p class="empty-state">Complete some interviews to see your weak areas</p>
+          </div>
+        </div>
+
+        <!-- Recent Sessions -->
+        <div class="recent-sessions glass-card">
+          <h3>📋 Recent Interviews</h3>
+          <div class="sessions-list" id="sessions-list">
+            <p class="empty-state">No interviews yet. Start one to track your progress!</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== HELP SECTION ===================== -->
+    <section id="help-section" class="section hidden">
+      <div class="section-content">
+        <button class="btn-back" id="btn-back-help">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/>
+          </svg>
+          Back
+        </button>
+        <h2 class="section-title">Help & <span class="gradient-text">Support</span></h2>
+        <p class="section-subtitle">Learn more about IntervueX and get in touch</p>
+
+        <div class="help-grid">
+          <!-- About -->
+          <div class="help-card glass-card">
+            <div class="help-card-icon">📖</div>
+            <h3>About the Platform</h3>
+            <p>IntervueX is an advanced AI-powered platform designed to help you prepare for technical interviews at top companies like Google, Amazon, Meta, Microsoft, and Apple.</p>
+            <ul class="help-list">
+              <li>🤖 <strong>AI Mock Interviews</strong> — Realistic video-call style interviews with an AI avatar that speaks questions aloud</li>
+              <li>🎤 <strong>Voice Answers</strong> — Speak your answers naturally using your microphone with real-time transcription</li>
+              <li>💻 <strong>Code Editor</strong> — Built-in code notepad for coding questions with line numbers and language selection</li>
+              <li>📊 <strong>Smart Evaluation</strong> — AI evaluates clarity, accuracy, and communication with detailed feedback</li>
+              <li>📄 <strong>Resume Analyzer</strong> — Upload your PDF resume for ATS compatibility analysis and improvement tips</li>
+              <li>📈 <strong>Dashboard</strong> — Track your progress with score trends and identify weak areas</li>
+            </ul>
+          </div>
+
+          <!-- How to Use -->
+          <div class="help-card glass-card">
+            <div class="help-card-icon">🚀</div>
+            <h3>How to Use</h3>
+            <ol class="help-steps">
+              <li>
+                <strong>Create an Account</strong>
+                <p>Sign up with your email to track your progress across sessions.</p>
+              </li>
+              <li>
+                <strong>Start a Mock Interview</strong>
+                <p>Select your target role, company, and difficulty level. Click "Begin Interview" to enter the video call room.</p>
+              </li>
+              <li>
+                <strong>Answer Questions</strong>
+                <p>The AI interviewer will ask questions aloud. Use your microphone to speak your answer, or open the code editor for coding questions.</p>
+              </li>
+              <li>
+                <strong>Get Instant Feedback</strong>
+                <p>After submitting, receive detailed scores on clarity, accuracy, and communication with improvement suggestions.</p>
+              </li>
+              <li>
+                <strong>Track Progress</strong>
+                <p>Visit the Dashboard to see your score trends and identify areas that need more practice.</p>
+              </li>
+            </ol>
+          </div>
+
+          <!-- FAQ -->
+          <div class="help-card glass-card">
+            <div class="help-card-icon">❓</div>
+            <h3>Frequently Asked Questions</h3>
+            <div class="faq-list">
+              <div class="faq-item">
+                <h4>Is this platform free?</h4>
+                <p>Yes! The platform is completely free to use with unlimited mock interviews.</p>
+              </div>
+              <div class="faq-item">
+                <h4>Do I need a camera and microphone?</h4>
+                <p>It's recommended for the best experience, but not required. You can still use the code editor to write answers.</p>
+              </div>
+              <div class="faq-item">
+                <h4>Which companies are supported?</h4>
+                <p>Google, Amazon, Meta, Microsoft, Apple, and a Generic option covering standard interview patterns.</p>
+              </div>
+              <div class="faq-item">
+                <h4>How does the AI evaluation work?</h4>
+                <p>Powered by LLaMA 3.3 70B via Groq, the AI evaluates your answers on clarity, technical accuracy, and communication skills.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contact -->
+          <div class="help-card glass-card contact-card">
+            <div class="help-card-icon">📬</div>
+            <h3>Contact & Support</h3>
+            <p>Have questions, feedback, or facing any issues? Reach out!</p>
+            <div class="contact-details">
+              <a href="mailto:senapatijeet2004@gmail.com" class="contact-item">
+                <div class="contact-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                  </svg>
+                </div>
+                <div>
+                  <span class="contact-label">Email</span>
+                  <span class="contact-value">senapatijeet2004@gmail.com</span>
+                </div>
+              </a>
+              <a href="tel:+916295068022" class="contact-item">
+                <div class="contact-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2z"/>
+                  </svg>
+                </div>
+                <div>
+                  <span class="contact-label">Phone</span>
+                  <span class="contact-value">+91 6295068022</span>
+                </div>
+              </a>
+            </div>
+            <div class="contact-cta">
+              <p>Built with ❤️ by <strong>Jeet Senapati</strong></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== LOADING OVERLAY ===================== -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+      <div class="loader">
+        <div class="loader-ring"></div>
+        <div class="loader-ring"></div>
+        <div class="loader-ring"></div>
+        <p class="loader-text" id="loader-text">Preparing your interview...</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/three-scene.js"></script>
+  <script src="js/animations.js"></script>
+  <script src="js/avatar.js"></script>
+  <script src="js/speech.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/landing.js"></script>
+  <script src="js/interview.js"></script>
+  <script src="js/resume.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

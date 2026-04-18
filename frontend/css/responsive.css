@@ -1,0 +1,1363 @@
+/* ============================================================
+   INTERVUEX — Comprehensive Responsive Styles
+   Breakpoints: 1280px, 1024px, 768px, 480px, 360px
+   Covers: Nav, Auth, Landing, Setup, Interview (video call),
+           Notepad, Evaluation, Results, Resume, Dashboard, Help
+   ============================================================ */
+
+/* ──────────────────────────────────────────────────────────────
+   MOBILE NAV — Hamburger menu (hidden on desktop, shown ≤ 768px)
+   ────────────────────────────────────────────────────────────── */
+.nav-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  z-index: 60;
+  border-radius: var(--radius-sm);
+  transition: background 0.2s;
+}
+
+.nav-hamburger:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--text-primary);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+/* Hamburger → X animation */
+.nav-hamburger.active span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+.nav-hamburger.active span:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+.nav-hamburger.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* Mobile dropdown panel */
+.nav-mobile-dropdown {
+  display: none;
+  position: fixed;
+  top: 48px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgb(5, 5, 16);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1rem 1.25rem 2rem;
+  z-index: 9999;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow-y: auto;
+  transform: translateY(-10px);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.nav-mobile-dropdown.open {
+  display: flex;
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.nav-mobile-dropdown .mobile-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.85rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-family: var(--font-primary);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nav-mobile-dropdown .mobile-nav-link:hover,
+.nav-mobile-dropdown .mobile-nav-link.active {
+  background: rgba(0, 212, 255, 0.08);
+  border-color: rgba(0, 212, 255, 0.2);
+  color: var(--accent-primary);
+}
+
+.nav-mobile-dropdown .mobile-nav-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 0.5rem 0;
+}
+
+.nav-mobile-dropdown .mobile-nav-user {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-md);
+}
+
+.nav-mobile-dropdown .mobile-user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nav-mobile-dropdown .mobile-user-info .nav-avatar {
+  width: 32px;
+  height: 32px;
+  font-size: 0.85rem;
+}
+
+.nav-mobile-dropdown .mobile-user-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   LARGE DESKTOP (max-width: 1280px)
+   ────────────────────────────────────────────────────────────── */
+@media (max-width: 1280px) {
+  .section-content {
+    max-width: 1000px;
+  }
+
+  .help-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+
+  .call-eval-content {
+    max-width: 600px;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   TABLET & SMALL DESKTOP (max-width: 1024px)
+   ────────────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .setup-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .candidate-form-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .dashboard-charts {
+    grid-template-columns: 1fr;
+  }
+
+  .resume-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .overall-score-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .help-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Nav links can get cramped */
+  .nav-link {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.78rem;
+  }
+
+  .nav-brand {
+    font-size: 0.82rem;
+  }
+
+  #nav-user-name {
+    display: none;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   TABLET (max-width: 768px)
+   ────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* ─── Nav: Switch to hamburger ─── */
+  .nav-hamburger {
+    display: flex;
+  }
+
+  .nav-center {
+    display: none;
+  }
+
+  .nav-right {
+    display: none;
+  }
+
+  .app-nav {
+    padding: 0.5rem 1rem;
+  }
+
+  /* ─── Sections ─── */
+  .section {
+    padding: var(--spacing-lg);
+  }
+
+  .section-content {
+    max-width: 100%;
+  }
+
+  .section-title {
+    font-size: 1.85rem;
+  }
+
+  .section-subtitle {
+    font-size: 0.95rem;
+    margin-bottom: var(--spacing-xl);
+  }
+
+  /* ─── Auth ─── */
+  .auth-container {
+    padding: var(--spacing-md);
+  }
+
+  .auth-card {
+    max-width: 100%;
+    padding: var(--spacing-xl);
+  }
+
+  .auth-logo-icon {
+    font-size: 2.5rem;
+  }
+
+  .auth-logo-text {
+    font-size: 1.4rem;
+  }
+
+  /* ─── Landing ─── */
+  .hero-title {
+    font-size: 2.5rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+    max-width: 300px;
+    justify-content: center;
+  }
+
+  .hero-stats {
+    gap: var(--spacing-lg);
+  }
+
+  .stat-number {
+    font-size: 1.5rem;
+  }
+
+  /* ─── Setup ─── */
+  .difficulty-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .option-grid {
+    gap: 0.4rem;
+  }
+
+  .setup-card {
+    padding: var(--spacing-lg);
+  }
+
+  /* ─── Interview (Video Call) ─── */
+  .call-header {
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .call-header-left {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    justify-content: center;
+  }
+
+  .call-header-right {
+    justify-content: center;
+  }
+
+  .meta-badge {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.5rem;
+  }
+
+  .call-title {
+    font-size: 0.82rem;
+  }
+
+  .call-rec-dot {
+    width: 8px;
+    height: 8px;
+  }
+
+  /* Stack video panels vertically */
+  .call-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+
+  .call-transcript p {
+    font-size: 0.85rem;
+    max-height: 80px;
+  }
+
+  .candidate-avatar-circle {
+    width: 70px;
+    height: 70px;
+    font-size: 2rem;
+  }
+
+  /* Call Controls — wrap on tablets */
+  .call-controls {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.6rem;
+  }
+
+  .call-btn {
+    width: 42px;
+    height: 42px;
+  }
+
+  .btn-submit-call {
+    font-size: 0.8rem;
+    padding: 0 1rem;
+    height: 42px;
+  }
+
+  /* Notepad */
+  .notepad-panel {
+    height: 200px;
+  }
+
+  /* Evaluation overlay */
+  .call-eval-content {
+    padding: var(--spacing-lg);
+    max-width: 95vw;
+  }
+
+  .eval-title {
+    font-size: 1.1rem;
+  }
+
+  .score-grid {
+    gap: var(--spacing-lg);
+  }
+
+  .score-ring {
+    width: 85px;
+    height: 85px;
+  }
+
+  .score-value {
+    font-size: 1.3rem;
+  }
+
+  .eval-actions {
+    flex-direction: column;
+  }
+
+  .eval-actions .btn {
+    width: 100%;
+  }
+
+  /* Hint overlay */
+  .call-hint-content {
+    min-width: unset;
+    max-width: 90vw;
+    font-size: 0.85rem;
+    padding: 0.75rem 1rem;
+  }
+
+  /* ─── Results ─── */
+  .overall-score-ring {
+    width: 110px;
+    height: 110px;
+  }
+
+  .overall-score-value {
+    font-size: 1.8rem;
+  }
+
+  .results-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .results-actions .btn {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .rq-scores {
+    flex-wrap: wrap;
+    gap: var(--spacing-md) !important;
+  }
+
+  /* ─── Resume ─── */
+  .ats-score-section {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .ats-score-ring {
+    width: 100px;
+    height: 100px;
+  }
+
+  .ats-score-value {
+    font-size: 1.5rem;
+  }
+
+  /* ─── Dashboard ─── */
+  .dashboard-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-card {
+    padding: var(--spacing-md);
+  }
+
+  /* ─── Modal ─── */
+  .modal-content {
+    width: 95%;
+    padding: var(--spacing-xl);
+  }
+
+  /* ─── Session items ─── */
+  .session-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .session-info {
+    flex-wrap: wrap;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   MOBILE (max-width: 480px)
+   ────────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  html {
+    font-size: 14px;
+  }
+
+  /* ─── Section ─── */
+  .section {
+    padding: var(--spacing-md);
+  }
+
+  .section-title {
+    font-size: 1.6rem;
+  }
+
+  .section-subtitle {
+    font-size: 0.88rem;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  /* ─── Auth ─── */
+  .auth-container {
+    padding: var(--spacing-sm);
+  }
+
+  .auth-card {
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-md);
+  }
+
+  .auth-logo-icon {
+    font-size: 2rem;
+  }
+
+  .auth-logo-text {
+    font-size: 1.2rem;
+  }
+
+  .auth-logo-sub {
+    font-size: 0.78rem;
+  }
+
+  .auth-tabs {
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .auth-tab {
+    font-size: 0.8rem;
+    padding: 0.5rem;
+  }
+
+  .form-group label {
+    font-size: 0.8rem;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    padding: 0.65rem 0.85rem;
+    font-size: 0.9rem;
+  }
+
+  .btn {
+    font-size: 0.88rem;
+    padding: 0.65rem 1.25rem;
+  }
+
+  .btn-large {
+    padding: 0.85rem 1.75rem;
+    font-size: 1rem;
+  }
+
+  /* ─── Candidate Profile ─── */
+  .candidate-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .setup-upload-zone {
+    padding: 1.25rem;
+    min-height: 110px;
+  }
+
+  .setup-upload-text {
+    font-size: 0.85rem;
+  }
+
+  .required-badge,
+  .optional-badge {
+    font-size: 0.55rem;
+    padding: 0.08rem 0.35rem;
+  }
+
+  .candidate-details-section {
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+  }
+
+  /* ─── Landing ─── */
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .hero-stats {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  .hero-badge {
+    font-size: 0.78rem;
+    padding: 0.35rem 1rem;
+  }
+
+  .landing-content {
+    padding: var(--spacing-lg);
+  }
+
+  /* ─── Setup ─── */
+  .setup-card {
+    padding: var(--spacing-lg);
+  }
+
+  .setup-card-icon {
+    font-size: 1.6rem;
+  }
+
+  .setup-card h3 {
+    font-size: 1rem;
+  }
+
+  .option-grid {
+    gap: 0.35rem;
+  }
+
+  .option-btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  .difficulty-btn {
+    padding: 0.75rem;
+  }
+
+  .diff-icon {
+    font-size: 1.2rem;
+  }
+
+  .diff-desc {
+    font-size: 0.65rem;
+  }
+
+  .setup-hint {
+    font-size: 0.78rem;
+  }
+
+  /* ─── Interview (Video Call) ─── */
+  .call-header {
+    padding: 0.4rem 0.5rem;
+  }
+
+  .call-header-left {
+    gap: 0.3rem;
+  }
+
+  .call-title {
+    font-size: 0.75rem;
+  }
+
+  .meta-badge {
+    font-size: 0.65rem;
+    padding: 0.1rem 0.4rem;
+  }
+
+  .call-question-badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+  }
+
+  .timer {
+    font-size: 0.78rem;
+  }
+
+  .call-grid {
+    gap: 2px;
+    padding: 2px;
+  }
+
+  .call-transcript {
+    padding: 0.6rem 0.75rem;
+  }
+
+  .call-transcript p {
+    font-size: 0.8rem;
+    max-height: 60px;
+  }
+
+  .candidate-avatar-circle {
+    width: 56px;
+    height: 56px;
+    font-size: 1.5rem;
+  }
+
+  .candidate-no-video p {
+    font-size: 0.75rem;
+  }
+
+  .call-panel-label {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    bottom: 0.5rem;
+    left: 0.5rem;
+  }
+
+  .speech-transcript {
+    bottom: 2rem;
+    left: 0.5rem;
+    right: 0.5rem;
+    padding: 0.4rem 0.5rem;
+    max-height: 70px;
+  }
+
+  .transcript-final,
+  .transcript-interim {
+    font-size: 0.78rem;
+  }
+
+  .interviewer-status {
+    font-size: 0.68rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .mic-indicator {
+    top: 0.5rem;
+    right: 0.5rem;
+    height: 18px;
+  }
+
+  /* Call Controls — more compact */
+  .call-controls {
+    gap: 0.35rem;
+    padding: 0.5rem 0.35rem;
+  }
+
+  .call-btn {
+    width: 38px;
+    height: 38px;
+  }
+
+  .call-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .btn-submit-call {
+    font-size: 0.72rem;
+    padding: 0 0.75rem;
+    height: 38px;
+    gap: 0.3rem;
+  }
+
+  .btn-submit-call svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .btn-hint-call {
+    font-size: 1rem;
+  }
+
+  /* Notepad — smaller */
+  .notepad-panel {
+    height: 180px;
+  }
+
+  .notepad-header {
+    padding: 0.3rem 0.5rem;
+  }
+
+  .notepad-title {
+    font-size: 0.72rem;
+  }
+
+  .notepad-lang-select {
+    font-size: 0.68rem;
+  }
+
+  .notepad-btn {
+    width: 22px;
+    height: 22px;
+  }
+
+  .notepad-line-numbers {
+    width: 32px;
+  }
+
+  .notepad-line-numbers span {
+    font-size: 0.7rem;
+  }
+
+  .notepad-editor {
+    font-size: 0.72rem;
+    padding: 0.5rem;
+  }
+
+  .notepad-footer {
+    padding: 0.2rem 0.5rem;
+  }
+
+  .notepad-footer-info,
+  .notepad-footer-hint {
+    font-size: 0.62rem;
+  }
+
+  /* Evaluation overlay */
+  .call-eval-overlay {
+    padding: 0.5rem;
+  }
+
+  .call-eval-content {
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    max-height: 95vh;
+  }
+
+  .eval-title {
+    font-size: 1rem;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .score-grid {
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .score-ring {
+    width: 72px;
+    height: 72px;
+  }
+
+  .score-value {
+    font-size: 1.1rem;
+  }
+
+  .score-label {
+    font-size: 0.75rem;
+  }
+
+  .eval-section {
+    padding: var(--spacing-md);
+  }
+
+  .eval-section h4 {
+    font-size: 0.85rem;
+  }
+
+  .eval-section ul li {
+    font-size: 0.82rem;
+  }
+
+  .eval-section.improved p {
+    font-size: 0.82rem;
+  }
+
+  .eval-actions {
+    margin-top: var(--spacing-md);
+    gap: var(--spacing-sm);
+  }
+
+  /* Hint overlay */
+  .call-hint-content {
+    min-width: unset;
+    max-width: calc(100vw - 2rem);
+    font-size: 0.8rem;
+    padding: 0.6rem 0.85rem;
+  }
+
+  /* ─── Results ─── */
+  .results-header {
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .overall-score-card {
+    padding: var(--spacing-lg);
+    gap: var(--spacing-md);
+  }
+
+  .overall-score-ring {
+    width: 90px;
+    height: 90px;
+  }
+
+  .overall-score-value {
+    font-size: 1.5rem;
+  }
+
+  .overall-score-details h3 {
+    font-size: 1.05rem;
+  }
+
+  .overall-score-details p {
+    font-size: 0.82rem;
+  }
+
+  .overall-meta {
+    justify-content: center;
+  }
+
+  .result-question-card {
+    padding: var(--spacing-md);
+  }
+
+  .result-question-card h4 {
+    font-size: 0.85rem;
+  }
+
+  .result-question-card .rq-question {
+    font-size: 0.9rem;
+  }
+
+  .result-question-card .rq-answer {
+    font-size: 0.82rem;
+    padding: var(--spacing-sm);
+  }
+
+  .rq-score-value {
+    font-size: 1.2rem;
+  }
+
+  .rq-score-label {
+    font-size: 0.68rem;
+  }
+
+  /* ─── Resume ─── */
+  .upload-zone {
+    padding: var(--spacing-lg);
+  }
+
+  .upload-icon svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .upload-text {
+    font-size: 0.9rem;
+  }
+
+  .upload-hint {
+    font-size: 0.78rem;
+  }
+
+  .resume-results {
+    padding: var(--spacing-md);
+  }
+
+  .results-title {
+    font-size: 1.05rem;
+  }
+
+  .ats-score-ring {
+    width: 85px;
+    height: 85px;
+  }
+
+  .ats-score-value {
+    font-size: 1.3rem;
+  }
+
+  .ats-score-info h4 {
+    font-size: 0.9rem;
+  }
+
+  .ats-score-info p {
+    font-size: 0.82rem;
+  }
+
+  .resume-detail h4 {
+    font-size: 0.88rem;
+  }
+
+  .resume-detail ul li {
+    font-size: 0.82rem;
+  }
+
+  .keyword-chip {
+    font-size: 0.72rem;
+    padding: 0.25rem 0.6rem;
+  }
+
+  /* ─── Dashboard ─── */
+  .stat-card-value {
+    font-size: 1.5rem;
+  }
+
+  .stat-card-label {
+    font-size: 0.78rem;
+  }
+
+  .chart-card h3 {
+    font-size: 0.9rem;
+  }
+
+  .chart-card canvas {
+    max-height: 200px;
+  }
+
+  .weak-areas h3,
+  .recent-sessions h3 {
+    font-size: 0.9rem;
+  }
+
+  .weak-area-item .wa-text {
+    font-size: 0.82rem;
+  }
+
+  .session-company {
+    font-size: 0.82rem;
+  }
+
+  .session-role {
+    font-size: 0.78rem;
+  }
+
+  .session-score {
+    font-size: 1rem;
+  }
+
+  .session-date {
+    font-size: 0.72rem;
+  }
+
+  .empty-state {
+    font-size: 0.82rem;
+    padding: var(--spacing-md);
+  }
+
+  /* ─── Help ─── */
+  .help-card {
+    padding: var(--spacing-md);
+  }
+
+  .help-card-icon {
+    font-size: 1.6rem;
+  }
+
+  .help-card h3 {
+    font-size: 1rem;
+  }
+
+  .help-card > p {
+    font-size: 0.82rem;
+  }
+
+  .help-list li {
+    font-size: 0.82rem;
+  }
+
+  .help-steps li {
+    padding-left: 2.2rem;
+  }
+
+  .help-steps li::before {
+    width: 24px;
+    height: 24px;
+    font-size: 0.68rem;
+  }
+
+  .help-steps li strong {
+    font-size: 0.88rem;
+  }
+
+  .help-steps li p {
+    font-size: 0.78rem;
+  }
+
+  .faq-item h4 {
+    font-size: 0.82rem;
+  }
+
+  .faq-item p {
+    font-size: 0.78rem;
+  }
+
+  .contact-item {
+    padding: 0.75rem;
+    gap: 0.75rem;
+  }
+
+  .contact-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .contact-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .contact-label {
+    font-size: 0.68rem;
+  }
+
+  .contact-value {
+    font-size: 0.82rem;
+  }
+
+  .contact-cta p {
+    font-size: 0.78rem;
+  }
+
+  /* ─── Toast ─── */
+  .toast {
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    max-width: none;
+    font-size: 0.82rem;
+  }
+
+  /* ─── Loading ─── */
+  .loader-text {
+    font-size: 0.78rem;
+  }
+
+  /* ─── Back button ─── */
+  .btn-back {
+    font-size: 0.82rem;
+    margin-bottom: var(--spacing-md);
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   SMALL MOBILE (max-width: 360px)
+   Handles very narrow devices (iPhone SE, Galaxy Fold, etc.)
+   ────────────────────────────────────────────────────────────── */
+@media (max-width: 360px) {
+  html {
+    font-size: 13px;
+  }
+
+  .section {
+    padding: var(--spacing-sm);
+  }
+
+  /* Auth */
+  .auth-card {
+    padding: var(--spacing-md);
+  }
+
+  .auth-logo-text {
+    font-size: 1.1rem;
+  }
+
+  /* Landing */
+  .hero-title {
+    font-size: 1.7rem;
+  }
+
+  .hero-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .hero-actions .btn {
+    max-width: 100%;
+  }
+
+  .landing-content {
+    padding: var(--spacing-md);
+  }
+
+  /* Interview */
+  .call-controls {
+    gap: 0.25rem;
+    padding: 0.4rem 0.25rem;
+  }
+
+  .call-btn {
+    width: 34px;
+    height: 34px;
+  }
+
+  .call-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .btn-submit-call {
+    font-size: 0.68rem;
+    padding: 0 0.5rem;
+    height: 34px;
+  }
+
+  .btn-submit-call svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .call-transcript p {
+    font-size: 0.72rem;
+    max-height: 50px;
+  }
+
+  /* Evaluation */
+  .score-grid {
+    gap: var(--spacing-sm);
+  }
+
+  .score-ring {
+    width: 60px;
+    height: 60px;
+  }
+
+  .score-value {
+    font-size: 0.95rem;
+  }
+
+  .score-label {
+    font-size: 0.68rem;
+  }
+
+  /* Results */
+  .overall-score-ring {
+    width: 75px;
+    height: 75px;
+  }
+
+  .overall-score-value {
+    font-size: 1.3rem;
+  }
+
+  /* Notepad */
+  .notepad-panel {
+    height: 150px;
+  }
+
+  /* Setup */
+  .option-btn {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.72rem;
+  }
+
+  .difficulty-btn {
+    padding: 0.6rem;
+  }
+
+  /* Meta badges hide some on very small screens */
+  .call-header-left .meta-badge:nth-child(n+4) {
+    display: none;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   LANDSCAPE PHONE (max-height: 500px + max-width: 900px)
+   Optimize the video call layout for landscape phone use
+   ────────────────────────────────────────────────────────────── */
+@media (max-height: 500px) and (max-width: 900px) {
+  .call-header {
+    padding: 0.3rem 0.5rem;
+    flex-direction: row;
+  }
+
+  .call-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+  }
+
+  .call-controls {
+    padding: 0.4rem;
+    gap: 0.3rem;
+  }
+
+  .call-btn {
+    width: 34px;
+    height: 34px;
+  }
+
+  .btn-submit-call {
+    height: 34px;
+    font-size: 0.68rem;
+    padding: 0 0.6rem;
+  }
+
+  .notepad-panel {
+    height: 120px;
+  }
+
+  .call-transcript p {
+    max-height: 40px;
+    font-size: 0.72rem;
+  }
+
+  .candidate-avatar-circle {
+    width: 50px;
+    height: 50px;
+    font-size: 1.3rem;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   REDUCED MOTION
+   ────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .float-animation {
+    animation: none;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   TOUCH DEVICE ENHANCEMENTS
+   ────────────────────────────────────────────────────────────── */
+@media (hover: none) and (pointer: coarse) {
+  /* Larger tap targets */
+  .option-btn {
+    min-height: 44px;
+  }
+
+  .call-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .nav-link {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  .auth-tab {
+    min-height: 44px;
+  }
+
+  .faq-item {
+    padding: var(--spacing-md) var(--spacing-lg);
+  }
+
+  /* Disable hover transforms on touch */
+  .glass-card:hover {
+    transform: none;
+  }
+
+  .btn-primary:hover,
+  .btn-secondary:hover,
+  .btn-outline:hover {
+    transform: none;
+  }
+
+  .contact-item:hover {
+    transform: none;
+  }
+
+  /* Smoother scrolling */
+  .call-eval-content,
+  .call-transcript p {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   SAFE AREA INSETS (Notch phones, Dynamic Island, etc.)
+   ────────────────────────────────────────────────────────────── */
+@supports (padding: env(safe-area-inset-top)) {
+  .app-nav {
+    padding-top: calc(0.5rem + env(safe-area-inset-top));
+    padding-left: calc(1rem + env(safe-area-inset-left));
+    padding-right: calc(1rem + env(safe-area-inset-right));
+  }
+
+  .call-controls {
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+  }
+
+  .nav-mobile-dropdown {
+    padding-left: calc(1.25rem + env(safe-area-inset-left));
+    padding-right: calc(1.25rem + env(safe-area-inset-right));
+  }
+
+  .auth-container {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}

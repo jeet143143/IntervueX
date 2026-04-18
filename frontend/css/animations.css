@@ -1,0 +1,282 @@
+/* ============================================================
+   INTERVUEX — Animation Styles
+   Keyframes and animation classes for GSAP targets
+   ============================================================ */
+
+/* ---------- Entrance Animations ---------- */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.slide-up {
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+.slide-down {
+  opacity: 0;
+  transform: translateY(-40px);
+}
+
+.slide-left {
+  opacity: 0;
+  transform: translateX(40px);
+}
+
+.slide-right {
+  opacity: 0;
+  transform: translateX(-40px);
+}
+
+.scale-in {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+/* ---------- Floating Animation ---------- */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.float-animation {
+  animation: float 4s ease-in-out infinite;
+}
+
+.float-animation-delay-1 {
+  animation-delay: 0.5s;
+}
+
+.float-animation-delay-2 {
+  animation-delay: 1s;
+}
+
+/* ---------- Glow Pulse ---------- */
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(0, 212, 255, 0.25),
+                0 0 80px rgba(0, 212, 255, 0.1);
+  }
+}
+
+.glow-animation {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+/* ---------- Shimmer Effect ---------- */
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0.05) 50%,
+    rgba(255,255,255,0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite;
+}
+
+/* ---------- Score Counter Animation ---------- */
+@keyframes count-up {
+  from { opacity: 0; transform: scale(0.5); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.score-animate {
+  animation: count-up 0.5s ease-out;
+}
+
+/* ---------- Ripple Effect ---------- */
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+.btn-primary::after {
+  content: '';
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.3) 10%, transparent 10.01%);
+  background-repeat: no-repeat;
+  background-position: 50%;
+  transform: scale(10);
+  opacity: 0;
+  transition: transform 0.4s, opacity 0.8s;
+}
+
+.btn-primary:active::after {
+  transform: scale(0);
+  opacity: 0.3;
+  transition: 0s;
+}
+
+/* ---------- Card Hover Tilt ---------- */
+.tilt-card {
+  transition: transform 0.3s ease;
+}
+
+.tilt-card:hover {
+  transform: perspective(1000px) rotateX(2deg) rotateY(-2deg) scale(1.02);
+}
+
+/* ---------- Gradient Border Animation ---------- */
+@keyframes gradient-border {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.gradient-border {
+  position: relative;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    45deg,
+    var(--accent-primary),
+    var(--accent-secondary),
+    var(--accent-tertiary),
+    var(--accent-primary)
+  );
+  background-size: 300% 300%;
+  animation: gradient-border 6s ease infinite;
+  z-index: -1;
+  opacity: 0.3;
+}
+
+/* ---------- Skeleton Loading ---------- */
+@keyframes skeleton-loading {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.04) 25%,
+    rgba(255,255,255,0.08) 50%,
+    rgba(255,255,255,0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+/* ---------- Notification / Toast ---------- */
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-out-right {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  padding: 1rem 1.5rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  z-index: 300;
+  animation: slide-in-right 0.3s ease;
+  max-width: 400px;
+  font-size: 0.9rem;
+}
+
+.toast.toast-success {
+  border-left: 3px solid var(--accent-success);
+}
+
+.toast.toast-error {
+  border-left: 3px solid var(--accent-danger);
+}
+
+.toast.toast-hide {
+  animation: slide-out-right 0.3s ease forwards;
+}
+
+/* ---------- Particle glow on section change ---------- */
+@keyframes section-glow {
+  0% { opacity: 0; }
+  50% { opacity: 0.6; }
+  100% { opacity: 0; }
+}
+
+.section-transition-glow {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(0, 212, 255, 0.08), transparent 70%);
+  pointer-events: none;
+  z-index: 50;
+  animation: section-glow 0.8s ease forwards;
+}
+
+/* ---------- Progress Bar ---------- */
+@keyframes progress-fill {
+  from { width: 0%; }
+}
+
+.progress-bar {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--gradient-glow);
+  border-radius: var(--radius-full);
+  animation: progress-fill 0.6s ease;
+}
