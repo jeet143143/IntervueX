@@ -24,8 +24,92 @@
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/animations.css">
   <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/intro.css">
 </head>
 <body>
+
+  <!-- ===================== CINEMATIC INTRO OVERLAY ===================== -->
+  <div id="intro-overlay">
+    <canvas id="intro-canvas"></canvas>
+    <div class="intro-dark-overlay"></div>
+    <div class="intro-scanlines"></div>
+
+    <!-- Skip Button -->
+    <button class="intro-skip-btn" id="intro-skip-btn">Skip Intro ⏭</button>
+
+    <!-- HUD Content Layer -->
+    <div class="intro-content">
+
+      <!-- Scene 1: Welcome -->
+      <div class="intro-welcome">
+        <h1>Welcome to <span class="intro-highlight">IntervueX</span></h1>
+      </div>
+
+      <!-- Scene 2: AI Core -->
+      <div class="intro-ai-core">
+        <div class="intro-ai-ring"></div>
+        <div class="intro-ai-ring"></div>
+        <div class="intro-ai-ring"></div>
+        <div class="intro-ai-orb"></div>
+        <p class="intro-ai-text">Your AI Interview Coach</p>
+      </div>
+
+      <!-- Scene 3: Feature Cards -->
+      <div class="intro-features">
+        <div class="intro-feature-card">
+          <div class="card-glow"></div>
+          <span class="card-icon">🏢</span>
+          <span class="card-title">Company-Specific<br>Interviews</span>
+        </div>
+        <div class="intro-feature-card">
+          <div class="card-glow"></div>
+          <span class="card-icon">⚡</span>
+          <span class="card-title">Real-Time<br>Feedback</span>
+        </div>
+        <div class="intro-feature-card">
+          <div class="card-glow"></div>
+          <span class="card-icon">🎯</span>
+          <span class="card-title">Mock Interview<br>Practice</span>
+        </div>
+      </div>
+
+      <!-- Scene 4: Dashboard Preview -->
+      <div class="intro-dashboard">
+        <div class="intro-dash-card">
+          <div class="intro-dash-title">Performance Snapshot</div>
+          <div class="intro-score-row">
+            <span class="intro-score-label">Clarity</span>
+            <div class="intro-score-bar-track">
+              <div class="intro-score-bar-fill bar-clarity"></div>
+            </div>
+            <span class="intro-score-value">8/10</span>
+          </div>
+          <div class="intro-score-row">
+            <span class="intro-score-label">Accuracy</span>
+            <div class="intro-score-bar-track">
+              <div class="intro-score-bar-fill bar-accuracy"></div>
+            </div>
+            <span class="intro-score-value">9/10</span>
+          </div>
+          <div class="intro-score-row">
+            <span class="intro-score-label">Communication</span>
+            <div class="intro-score-bar-track">
+              <div class="intro-score-bar-fill bar-communication"></div>
+            </div>
+            <span class="intro-score-value">7/10</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scene 5: Final CTA -->
+      <div class="intro-final">
+        <h2>Start Your <span class="intro-highlight">Interview</span></h2>
+        <div class="intro-final-glow"></div>
+      </div>
+
+    </div>
+  </div>
+
   <!-- Three.js Canvas (background) -->
   <canvas id="three-canvas"></canvas>
 
@@ -942,6 +1026,7 @@
   </div>
 
   <!-- Scripts -->
+  <script src="js/intro.js"></script>
   <script src="js/api.js"></script>
   <script src="js/three-scene.js"></script>
   <script src="js/animations.js"></script>

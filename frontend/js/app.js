@@ -16,9 +16,33 @@ const App = (() => {
   let currentSection = 'auth';
 
   /**
-   * Initialize the application
+   * Boot the app — play cinematic intro first, then init
    */
-  async function init() {
+  function boot() {
+    // Hide auth section during intro
+    const authSection = document.getElementById('auth-section');
+    if (authSection) authSection.style.visibility = 'hidden';
+
+    // Connect skip button
+    const skipBtn = document.getElementById('intro-skip-btn');
+    if (skipBtn) {
+      skipBtn.addEventListener('click', () => {
+        IntroAnimation.skip(() => initApp());
+      });
+    }
+
+    // Play intro, then initialize app
+    IntroAnimation.play(() => initApp());
+  }
+
+  /**
+   * Initialize the application (called after intro completes)
+   */
+  async function initApp() {
+    // Show auth section
+    const authSection = document.getElementById('auth-section');
+    if (authSection) authSection.style.visibility = '';
+
     // Initialize Three.js scene
     ThreeScene.init();
 
@@ -233,7 +257,7 @@ const App = (() => {
   }
 
   // Initialize when DOM is ready
-  document.addEventListener('DOMContentLoaded', init);
+  document.addEventListener('DOMContentLoaded', boot);
 
   return {
     navigateTo,
