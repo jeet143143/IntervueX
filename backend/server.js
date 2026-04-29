@@ -9,6 +9,8 @@ const authRoutes = require('./routes/auth');
 const interviewRoutes = require('./routes/interview');
 const resumeRoutes = require('./routes/resume');
 const dashboardRoutes = require('./routes/dashboard');
+const careerRoutes = require('./routes/career');
+const webhookRoutes = require('./routes/webhooks');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -29,6 +31,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/interview', interviewRoutes);
 app.use('/api/resume', resumeRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/career', careerRoutes);
+app.use('/api/webhooks', webhookRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -57,6 +61,8 @@ app.listen(PORT, () => {
   ║   🎯 IntervueX Server Running            ║
   ║   📡 Port: ${PORT}                         ║
   ║   🌐 http://localhost:${PORT}              ║
+  ║   🤖 AI Engine: Active                   ║
+  ║   📊 n8n Webhooks: Ready                 ║
   ╚══════════════════════════════════════════╝
   `);
 });

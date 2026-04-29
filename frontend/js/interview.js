@@ -8,12 +8,19 @@ const Interview = (() => {
   let selectedRole = null;
   let selectedCompany = null;
   let selectedDifficulty = null;
+  let selectedMode = 'normal'; // normal | pressure | pyq
   let currentSessionId = null;
   let currentQuestionNumber = 0;
   let currentHint = '';
   let timerInterval = null;
   let timerSeconds = 0;
   let candidateResumeFile = null;
+  let currentTimeLimit = 0; // pressure mode countdown
+  let fillerWordCount = 0;
+  let questionStartTime = 0;
+
+  // Filler words to detect
+  const FILLER_WORDS = ['um', 'uh', 'like', 'you know', 'basically', 'actually', 'literally', 'right', 'so yeah', 'i mean'];
 
   // Media state
   let mediaStream = null;
@@ -27,6 +34,7 @@ const Interview = (() => {
   function init() {
     // --- SETUP SECTION ---
     initOptionSelectors();
+    initModeSelector();
     initCandidateProfile();
 
     document.getElementById('btn-begin-interview').addEventListener('click', startInterview);
@@ -144,6 +152,35 @@ const Interview = (() => {
     group.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
     selectedBtn.classList.add('selected');
     Animations.buttonPress(selectedBtn);
+  }
+
+  // ===================== MODE SELECTOR =====================
+  function initModeSelector() {
+    document.querySelectorAll('#mode-options .option-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectOption('mode-options', btn);
+        selectedMode = btn.dataset.value || 'normal';
+        checkSetupReady();
+      });
+    });
+    // Default to 'normal'
+    const defaultBtn = document.querySelector('#mode-options .option-btn[data-value="normal"]');
+    if (defaultBtn) {
+      defaultBtn.classList.add('selected');
+    }
+  }
+
+  // ===================== FILLER WORD DETECTION =====================
+  function countFillerWords(text) {
+    if (!text) return 0;
+    const lower = text.toLowerCase();
+    let count = 0;
+    FILLER_WORDS.forEach(filler => {
+      const regex = new RegExp('\\b' + filler.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'gi');
+      const matches = lower.match(regex);
+      if (matches) count += matches.length;
+    });
+    return count;
   }
 
   // ===================== CANDIDATE PROFILE =====================
@@ -270,6 +307,7 @@ const Interview = (() => {
       formData.append('role', selectedRole);
       formData.append('company', selectedCompany);
       formData.append('difficulty', selectedDifficulty);
+      formData.append('mode', selectedMode);
       formData.append('university', document.getElementById('candidate-university').value.trim());
       formData.append('passoutYear', document.getElementById('candidate-passout-year').value.trim());
 
@@ -316,21 +354,26 @@ const Interview = (() => {
         const avatarCanvas = document.getElementById('avatar-canvas');
         Avatar.init(avatarCanvas);
 
-        // Show the question text
+      // Show the question text
         document.getElementById('question-text').textContent = data.question;
 
+        // Set time limit for pressure mode
+        currentTimeLimit = data.timeLimitSeconds || 0;
+
         // Speak a welcome + the question
-        const greeting = `Hello! Welcome to your ${selectedCompany} interview for the ${selectedRole} position. Let's begin.`;
+        const greeting = selectedMode === 'pressure'
+          ? `Welcome to your high-pressure ${selectedCompany} interview. Time is limited. Let's begin.`
+          : `Hello! Welcome to your ${selectedCompany} interview for the ${selectedRole} position. Let's begin.`;
         Avatar.setExpression('happy');
 
         Speech.speak(greeting).then(() => {
           Avatar.setExpression('neutral');
-          // Now speak the actual question
           return Speech.speak(data.question);
         }).then(() => {
-          // Start listening for candidate's answer
           startListeningForAnswer();
           startTimer();
+          questionStartTime = Date.now();
+          fillerWordCount = 0;
         });
       }, 500);
 
@@ -466,8 +509,14 @@ const Interview = (() => {
     stopTimer();
     Animations.showLoading('Evaluating your answer...');
 
+    // Calculate response time and filler words
+    const responseTimeSeconds = Math.round((Date.now() - questionStartTime) / 1000);
+    const fullAnswer = getFullAnswer();
+    const detectedFillers = countFillerWords(fullAnswer);
+    fillerWordCount += detectedFillers;
+
     try {
-      const data = await API.evaluateAnswer(currentSessionId, currentQuestionNumber, getFullAnswer());
+      const data = await API.evaluateAnswer(currentSessionId, currentQuestionNumber, fullAnswer, responseTimeSeconds, detectedFillers);
       const eval_ = data.evaluation;
 
       Animations.hideLoading();
@@ -484,6 +533,33 @@ const Interview = (() => {
       Animations.animateCounter(document.getElementById('score-clarity'), eval_.clarity);
       Animations.animateCounter(document.getElementById('score-accuracy'), eval_.accuracy);
       Animations.animateCounter(document.getElementById('score-communication'), eval_.communication);
+
+      // Show confidence & quality if available
+      const confEl = document.getElementById('score-confidence');
+      const qualEl = document.getElementById('score-responseQuality');
+      if (confEl) {
+        Animations.animateScoreRing('ring-confidence-fill', eval_.confidence || 0);
+        Animations.animateCounter(confEl, eval_.confidence || 0);
+      }
+      if (qualEl) {
+        Animations.animateScoreRing('ring-quality-fill', eval_.responseQuality || 0);
+        Animations.animateCounter(qualEl, eval_.responseQuality || 0);
+      }
+
+      // Show filler word count
+      const fillerEl = document.getElementById('eval-filler-count');
+      if (fillerEl) fillerEl.textContent = detectedFillers;
+
+      // Show response time
+      const timeEl = document.getElementById('eval-response-time');
+      if (timeEl) timeEl.textContent = `${responseTimeSeconds}s`;
+
+      // Show weakness targeting indicator
+      const weakTargetEl = document.getElementById('eval-weakness-target');
+      if (weakTargetEl && eval_.weaknessCategories && eval_.weaknessCategories.length > 0) {
+        weakTargetEl.classList.remove('hidden');
+        weakTargetEl.querySelector('.weakness-cats').textContent = eval_.weaknessCategories.join(', ');
+      }
 
       // Strengths
       const strengthsList = document.getElementById('eval-strengths');
@@ -556,6 +632,20 @@ const Interview = (() => {
       // Show question text
       document.getElementById('question-text').textContent = data.question;
 
+      // Update time limit for pressure mode
+      currentTimeLimit = data.timeLimitSeconds || 0;
+
+      // Show weakness targeting badge if active
+      const weakBadge = document.getElementById('weakness-target-badge');
+      if (weakBadge) {
+        if (data.isWeaknessTargeted) {
+          weakBadge.classList.remove('hidden');
+          weakBadge.textContent = '🎯 Targeting: ' + (data.identifiedWeaknesses || []).join(', ');
+        } else {
+          weakBadge.classList.add('hidden');
+        }
+      }
+
       // Avatar speaks the question
       Avatar.setExpression('neutral');
       const intro = currentQuestionNumber <= 2
@@ -565,9 +655,10 @@ const Interview = (() => {
       await Speech.speak(intro);
       await Speech.speak(data.question);
 
-      // Start listening
       startListeningForAnswer();
       startTimer();
+      questionStartTime = Date.now();
+      fillerWordCount = 0;
 
     } catch (error) {
       Animations.hideLoading();
@@ -607,6 +698,50 @@ const Interview = (() => {
       else if (score >= 6) label = 'Good Performance! 👍';
       else if (score >= 4) label = 'Average — Keep Practicing';
       document.getElementById('overall-score-label').textContent = label;
+
+      // Hireability Score
+      const hireEl = document.getElementById('hireability-score-value');
+      if (hireEl) {
+        Animations.animateCounter(hireEl, data.hireabilityScore || 0, 2, 0);
+      }
+      const hireRing = document.getElementById('hireability-ring-fill');
+      if (hireRing) {
+        const circumference = 60 * 2 * Math.PI;
+        hireRing.style.strokeDasharray = circumference;
+        hireRing.style.strokeDashoffset = circumference;
+        const offset = circumference - ((data.hireabilityScore || 0) / 100) * circumference;
+        gsap.to(hireRing, { strokeDashoffset: offset, duration: 2, ease: 'power2.out', delay: 0.5 });
+        hireRing.style.stroke = (data.hireabilityScore || 0) >= 70 ? 'var(--accent-success)' :
+          (data.hireabilityScore || 0) >= 40 ? 'var(--accent-warning)' : 'var(--accent-danger)';
+      }
+
+      // Hireability Assessment
+      const assessEl = document.getElementById('hireability-assessment');
+      if (assessEl && data.hireabilityAssessment) {
+        assessEl.classList.remove('hidden');
+        document.getElementById('hire-verdict').textContent = data.hireabilityAssessment.verdict || '';
+        document.getElementById('hire-summary').textContent = data.hireabilityAssessment.summary || '';
+        document.getElementById('hire-recommendation').textContent = data.hireabilityAssessment.recommendation || '';
+
+        const strengthsEl = document.getElementById('hire-strengths');
+        if (strengthsEl && data.hireabilityAssessment.topStrengths) {
+          strengthsEl.innerHTML = data.hireabilityAssessment.topStrengths.map(s => `<li>${s}</li>`).join('');
+        }
+        const gapsEl = document.getElementById('hire-gaps');
+        if (gapsEl && data.hireabilityAssessment.criticalGaps) {
+          gapsEl.innerHTML = data.hireabilityAssessment.criticalGaps.map(g => `<li>${g}</li>`).join('');
+        }
+      }
+
+      // Filler words & response time analytics
+      const fillerTotal = document.getElementById('result-filler-words');
+      if (fillerTotal) fillerTotal.textContent = data.totalFillerWords || 0;
+      const avgTime = document.getElementById('result-avg-response-time');
+      if (avgTime) avgTime.textContent = (data.averageResponseTime || 0) + 's';
+      const weakList = document.getElementById('result-weakness-list');
+      if (weakList && data.identifiedWeaknesses && data.identifiedWeaknesses.length > 0) {
+        weakList.innerHTML = data.identifiedWeaknesses.map(w => `<span class="weakness-chip">${w}</span>`).join('');
+      }
 
       App.navigateTo('results');
 
@@ -807,6 +942,18 @@ const Interview = (() => {
     timerInterval = setInterval(() => {
       timerSeconds++;
       updateTimerDisplay();
+
+      // Pressure mode auto-submit
+      if (currentTimeLimit > 0 && timerSeconds >= currentTimeLimit) {
+        const timerEl = document.getElementById('timer-display');
+        if (timerEl) timerEl.classList.add('timer-expired');
+        Animations.showToast('⏰ Time\'s up! Auto-submitting...', 'error');
+        submitAnswer();
+      }
+      // Pressure mode warning at 75% time
+      if (currentTimeLimit > 0 && timerSeconds === Math.floor(currentTimeLimit * 0.75)) {
+        Animations.showToast('⚠️ 25% time remaining!', 'error');
+      }
     }, 1000);
   }
 
@@ -820,7 +967,10 @@ const Interview = (() => {
   function updateTimerDisplay() {
     const m = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
     const s = (timerSeconds % 60).toString().padStart(2, '0');
-    document.getElementById('timer-display').textContent = `${m}:${s}`;
+    const timerEl = document.getElementById('timer-display');
+    timerEl.textContent = currentTimeLimit > 0
+      ? `${m}:${s} / ${Math.floor(currentTimeLimit/60).toString().padStart(2,'0')}:${(currentTimeLimit%60).toString().padStart(2,'0')}`
+      : `${m}:${s}`;
   }
 
   // ===================== RESET =====================
@@ -828,9 +978,13 @@ const Interview = (() => {
     selectedRole = null;
     selectedCompany = null;
     selectedDifficulty = null;
+    selectedMode = 'normal';
     currentSessionId = null;
     currentQuestionNumber = 0;
     candidateResumeFile = null;
+    currentTimeLimit = 0;
+    fillerWordCount = 0;
+    questionStartTime = 0;
     stopTimer();
 
     // Stop media

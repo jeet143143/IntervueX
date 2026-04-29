@@ -3,7 +3,7 @@ const Resume = require('../models/Resume');
 const aiService = require('../services/aiService');
 
 /**
- * Upload and analyze a resume
+ * Upload and analyze a resume — Enhanced with keyword optimization + question generation
  * POST /api/resume/upload
  */
 exports.uploadResume = async (req, res) => {
@@ -27,18 +27,18 @@ exports.uploadResume = async (req, res) => {
       });
     }
 
-    // Analyze with AI
-    const analysis = await aiService.analyzeResume(
-      extractedText,
-      targetRole || 'Software Engineer'
-    );
+    const role = targetRole || 'Software Engineer';
+
+    // Analyze with AI — Enhanced analysis
+    const analysis = await aiService.analyzeResume(extractedText, role);
 
     // Save to database
     const resume = new Resume({
       userEmail: email,
       fileName: req.file.originalname,
       extractedText: extractedText.substring(0, 5000), // Truncate for storage
-      analysis
+      analysis,
+      targetRole: role
     });
 
     await resume.save();

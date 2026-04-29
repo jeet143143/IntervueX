@@ -1,5 +1,6 @@
 /**
- * API Service — Fetch wrapper for backend calls
+ * API Service — Fetch wrapper for backend calls (Enhanced)
+ * Supports: Career Guidance, Webhooks, Enhanced Interview/Resume endpoints
  */
 const API = (() => {
   const BASE_URL = window.location.origin + '/api';
@@ -49,9 +50,9 @@ const API = (() => {
       body: JSON.stringify({ sessionId })
     }),
 
-    evaluateAnswer: (sessionId, questionNumber, answer) => request('/interview/evaluate', {
+    evaluateAnswer: (sessionId, questionNumber, answer, responseTimeSeconds = 0, fillerWordsClient = 0) => request('/interview/evaluate', {
       method: 'POST',
-      body: JSON.stringify({ sessionId, questionNumber, answer })
+      body: JSON.stringify({ sessionId, questionNumber, answer, responseTimeSeconds, fillerWordsClient })
     }),
 
     completeInterview: (sessionId) => request('/interview/complete', {
@@ -72,6 +73,14 @@ const API = (() => {
     // Dashboard endpoints
     getDashboard: (email) => request(`/dashboard/${encodeURIComponent(email)}`),
     getTrends: (email) => request(`/dashboard/${encodeURIComponent(email)}/trends`),
+
+    // Career Guidance endpoints
+    getCareerGuidance: (message, email) => request('/career/guidance', {
+      method: 'POST',
+      body: JSON.stringify({ message, email })
+    }),
+
+    getCareerTopics: () => request('/career/topics'),
 
     // Health check
     health: () => request('/health')

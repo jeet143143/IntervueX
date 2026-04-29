@@ -10,6 +10,7 @@ const App = (() => {
     results: 'results-section',
     resume: 'resume-section',
     dashboard: 'dashboard-section',
+    career: 'career-section',
     help: 'help-section'
   };
 
@@ -51,6 +52,7 @@ const App = (() => {
     Interview.init();
     ResumeAnalyzer.init();
     Dashboard.init();
+    CareerGuidance.init();
 
     // Initialize tilt effects
     setTimeout(() => Animations.initTiltEffects(), 500);

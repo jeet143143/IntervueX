@@ -7,6 +7,7 @@ const Landing = (() => {
     const btnStartInterview = document.getElementById('btn-start-interview');
     const btnResumeAnalyzer = document.getElementById('btn-resume-analyzer');
     const btnDashboard = document.getElementById('btn-dashboard');
+    const btnCareerGuidance = document.getElementById('btn-career-guidance');
 
     // Start Interview → go to setup (user already logged in)
     btnStartInterview.addEventListener('click', () => {
@@ -25,6 +26,14 @@ const Landing = (() => {
       Animations.buttonPress(btnDashboard);
       App.navigateTo('dashboard');
     });
+
+    // Career Guidance
+    if (btnCareerGuidance) {
+      btnCareerGuidance.addEventListener('click', () => {
+        Animations.buttonPress(btnCareerGuidance);
+        App.navigateTo('career');
+      });
+    }
   }
 
   return { init };
